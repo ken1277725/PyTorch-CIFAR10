@@ -15,11 +15,18 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
 
 from torch.autograd import Variable
+from tensorboardX import SummaryWriter
+
+
+#ummaryWriter('runs/exp-1')
+writer = SummaryWriter('runs/exp-1')
+
+#ummaryWriter('runs/exp-1')
 
 MSG_DISPLAY_FREQ = 200
 
 
-def train(train_loader, model, criterion, optimizer, epoch, USE_GPU=False):
+def train(train_loader, model, criterion, optimizer, epoch, USE_GPU=False,writer=None):
 
     batch_time = 0.0
 
@@ -50,7 +57,9 @@ def train(train_loader, model, criterion, optimizer, epoch, USE_GPU=False):
 
         batch_time += time.time()-end
         end = time.time()
-
+        if writer != None :
+            writer.add_scalar('data/s1',loss.data[0],i)
         if i % MSG_DISPLAY_FREQ == (MSG_DISPLAY_FREQ-1):
             print("[{}][{}/{}]\t Loss: {:0.5f}\t Batch time: {:0.3f}s".format(epoch, i+1, len(train_loader), running_loss/MSG_DISPLAY_FREQ, batch_time/MSG_DISPLAY_FREQ))
             running_loss = 0.0
+            batch_time = 0.0

@@ -44,14 +44,14 @@ USE_GPU = True
 
 def main():
 
-    transformations = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ])
+   # transformations = transforms.Compose([#
+   #     transforms.ToTensor(),
+   #     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+   # ])
 
-    train_dataset = CifarDataset(TRAIN_CSV_PATH, TRAIN_IMG_PATH, transformations)
+    train_dataset = CifarDataset(TRAIN_CSV_PATH, TRAIN_IMG_PATH)
     train_loader = CifarDataloader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
-    test_dataset = CifarDataset(TEST_CSV_PATH, TEST_IMG_PATH, transformations)
+    test_dataset = CifarDataset(TEST_CSV_PATH, TEST_IMG_PATH)
     test_loader = CifarDataloader(test_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
 
     model = resnet50(pretrained=True, num_classes=10)

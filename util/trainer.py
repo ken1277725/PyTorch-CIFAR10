@@ -102,3 +102,5 @@ class Trainer:
                       .format(epoch, b+1, len(train_loader),
                               running_loss/MSG_DISPLAY_FREQ, batch_time/MSG_DISPLAY_FREQ))
                 running_loss = 0.0
+                print("!!")
+                batch_time = 0.0

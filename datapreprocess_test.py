@@ -43,7 +43,7 @@ USE_GPU = True
 
 
 def main():
-
+    writer = SummaryWriter("runs/exp1")
     transformations = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
@@ -66,7 +66,7 @@ def main():
     # load_checkpoint(os.path.join('checkpoint', 'last_checkpoint.pth.tar'), model, optimizer)
 
     for epoch in range(EPOCHS):
-        train(train_loader, model, criterion, optimizer, epoch+1, USE_GPU)
+        train(train_loader, model, criterion, optimizer, epoch+1, USE_GPU,writer)
         test(test_loader, model, USE_GPU)
         save_checkpoint({
             'epoch': epoch+1,
