@@ -36,7 +36,7 @@ def train(train_loader, model, criterion, optimizer, epoch, USE_GPU=False,writer
     end = time.time()
 
     running_loss = 0.0
-
+    total_batch_num = len(train_loader)
     for i, (inputs, labels) in enumerate(train_loader):
 
         labels = torch.squeeze(labels, 1)
@@ -58,7 +58,7 @@ def train(train_loader, model, criterion, optimizer, epoch, USE_GPU=False,writer
         batch_time += time.time()-end
         end = time.time()
         if writer != None :
-            writer.add_scalar('data/s1',loss.data[0],i)
+            writer.add_scalar('data/s1',loss.data[0],total_batch_num * epoch + i)
         if i % MSG_DISPLAY_FREQ == (MSG_DISPLAY_FREQ-1):
             print("[{}][{}/{}]\t Loss: {:0.5f}\t Batch time: {:0.3f}s".format(epoch, i+1, len(train_loader), running_loss/MSG_DISPLAY_FREQ, batch_time/MSG_DISPLAY_FREQ))
             running_loss = 0.0
