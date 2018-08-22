@@ -19,7 +19,7 @@ from tensorboardX import SummaryWriter
 
 
 #ummaryWriter('runs/exp-1')
-writer = SummaryWriter('runs/exp-1')
+#writer = SummaryWriter('runs/exp-1')
 
 #ummaryWriter('runs/exp-1')
 
