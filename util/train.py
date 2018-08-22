@@ -59,7 +59,7 @@ def train(train_loader, model, criterion, optimizer, epoch, USE_GPU=False,writer
         if writer != None :
             writer.add_scalar('data/s1',loss.data[0],n_iter)
             if i % MSG_DISPLAY_FREQ == (MSG_DISPLAY_FREQ-1):
-                print("loss_value:{}".format(loss_value.data.item()))
+                #print("loss_value:{}".format(loss_value.data.item()))
                 
                 out = torch.cat((outputs.data, torch.ones(len(outputs), 1)), 1)
                 writer.add_embedding(out, metadata=labels, label_img=inputs, global_step=n_iter)
