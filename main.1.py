@@ -27,7 +27,7 @@ from util.test import test
 from util.checkpoint import save_checkpoint, load_checkpoint
 
 from tensorboardX import SummaryWriter 
-writer = SummaryWriter('runs/exp-2')
+writer = SummaryWriter('runs/exp-3')
 
 
 TRAIN_CSV_PATH = os.path.join('csv', 'train_labels.csv')
