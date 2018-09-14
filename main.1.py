@@ -24,7 +24,7 @@ from util.data.dataset import CifarDataset
 from util.data.dataloader import CifarDataloader
 from util.train import train
 from util.test import test
-from util.checkpoint import save_checkpoint, load_checkpoint
+#from util.checkpoint import save_checkpoint, load_checkpoint
 
 from tensorboardX import SummaryWriter 
 writer = SummaryWriter('runs/exp-4')
@@ -36,7 +36,6 @@ TEST_CSV_PATH = os.path.join('csv', 'test_labels.csv')
 TEST_IMG_PATH = os.path.join('image', 'test')
 
 
-USE_GPU = True
 
 
 ################## Part:0 Begin of ArgumentParse Setting##################
@@ -53,8 +52,9 @@ parser.add_argument("-b","--batch-size", help="bach_size",default=128, type=int,
 parser.add_argument("-e","--epoch",help="how many epoches will run , default will be 20",default=12, type=int,dest="epoch")
 
 # Learning Rate 
- parser.add_argument("-lr","--leraning_rate",help="how the leraning_rate will be, default will be 1e-3",default=1e-3, type=float,dest="leraning_rate")
+parser.add_argument("-lr","--leraning_rate",help="how the leraning_rate will be, default will be 1e-3",default=1e-3, type=float,dest="leraning_rate")
 
+parser.add_argument("-gpu","--use_gpu" , help="use gpu or not  ,default will be true", default=True,type=bool ,dest="use_gpu" )
 
 args = parser.parse_args()
 ################## Part:0 End of ArgumentParse Setting##################
@@ -77,6 +77,8 @@ K.set_session(tf.Session(config=config))
 EPOCHS = args.epoch
 BATCH_SIZE = args.batch_size
 LEARNING_RATE = args.leraning_rate
+USE_GPU = arg.use_gpu
+
 
 def main():
 
@@ -105,15 +107,30 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
     # load_checkpoint(os.path.join('checkpoint', 'last_checkpoint.pth.tar'), model, optimizer)
+    
+    # make optimizer into a horovod Version .
+    hvd.broadcast_parameters(model.state_dict(), root_rank=0)
+    optimizer = hvd.DistributedOptimizer(optimizer, named_parameters=model.named_parameters())
+
+    # def save_checkpoint(epoch):
+    #     if hvd.rank() == 0:
+    #         filepath = args.checkpoint_format.format(epoch=epoch + 1)
+    #         state = {
+    #             'model': model.state_dict(),
+    #             'optimizer': optimizer.state_dict(),
+    #         }
+    #         torch.save(state, filepath)
 
     for epoch in range(EPOCHS):
         train(train_loader, model, criterion, optimizer, epoch+1, USE_GPU,writer = writer)
         test(test_loader, model, USE_GPU)
-        save_checkpoint({
-            'epoch': epoch+1,
-            'state_dict': model.state_dict(),
-            'optimizer': optimizer.state_dict(),
-        }, os.path.join('checkpoint'))
+        save_checkpoint(epoch)
+        if hvd.rank()==0 : 
+            save_checkpoint({
+                'epoch': epoch+1,
+                'state_dict': model.state_dict(),
+                'optimizer': optimizer.state_dict(),
+            }, os.path.join('checkpoint'))
 
 if __name__ == "__main__":
     main()
