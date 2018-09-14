@@ -27,7 +27,7 @@ from util.test import test
 from util.checkpoint import save_checkpoint, load_checkpoint
 
 from tensorboardX import SummaryWriter 
-#writer = SummaryWriter('runs/exp-1')
+writer = SummaryWriter('runs/exp-4')
 
 
 TRAIN_CSV_PATH = os.path.join('csv', 'train_labels.csv')
@@ -35,7 +35,7 @@ TRAIN_IMG_PATH = os.path.join('image', 'train')
 TEST_CSV_PATH = os.path.join('csv', 'test_labels.csv')
 TEST_IMG_PATH = os.path.join('image', 'test')
 
-EPOCHS = 20
+EPOCHS = 50
 BATCH_SIZE = 32
 LEARNING_RATE = 1e-3
 
@@ -44,14 +44,14 @@ USE_GPU = True
 
 def main():
 
-   # transformations = transforms.Compose([#
-   #     transforms.ToTensor(),
-   #     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-   # ])
+    transformations = transforms.Compose([
+        transforms.ToTensor(),
+        # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
 
-    train_dataset = CifarDataset(TRAIN_CSV_PATH, TRAIN_IMG_PATH)
+    train_dataset = CifarDataset(TRAIN_CSV_PATH, TRAIN_IMG_PATH, transformations)
     train_loader = CifarDataloader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
-    test_dataset = CifarDataset(TEST_CSV_PATH, TEST_IMG_PATH)
+    test_dataset = CifarDataset(TEST_CSV_PATH, TEST_IMG_PATH, transformations)
     test_loader = CifarDataloader(test_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
 
     model = resnet50(pretrained=True, num_classes=10)
@@ -66,7 +66,7 @@ def main():
     # load_checkpoint(os.path.join('checkpoint', 'last_checkpoint.pth.tar'), model, optimizer)
 
     for epoch in range(EPOCHS):
-        train(train_loader, model, criterion, optimizer, epoch+1, USE_GPU)
+        train(train_loader, model, criterion, optimizer, epoch+1, USE_GPU,writer = writer)
         test(test_loader, model, USE_GPU)
         save_checkpoint({
             'epoch': epoch+1,
